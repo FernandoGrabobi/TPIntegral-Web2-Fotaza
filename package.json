@@ -1,0 +1,29 @@
+{
+  "name": "tpintegral-web2-fotaza",
+  "version": "1.0.0",
+  "description": "📸 **Proyecto Fotaza 2 - Red Social de Fotografía** 📝\r Descripción de la Consigna\r Fotaza 2 es una plataforma interactiva diseñada para la gestión profesional y comunitaria de contenido visual. El sistema debe permitir a los usuarios no solo compartir fotos y videos, sino también comercializar licencias, gestionar derechos de autor mediante marcas de agua y fomentar una comunidad moderada por un sistema de denuncias y validación.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FernandoGrabobi/TPIntegral-Web2-Fotaza.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FernandoGrabobi/TPIntegral-Web2-Fotaza/issues"
+  },
+  "homepage": "https://github.com/FernandoGrabobi/TPIntegral-Web2-Fotaza#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mysql2": "^3.22.0",
+    "pug": "^3.0.4",
+    "sequelize": "^6.37.8"
+  }
+}
