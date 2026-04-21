@@ -3,7 +3,12 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const app = express();
-
+ /**
+     *  nodemon app.js
+     *  para arrancar el servidor
+     *  http://localhost:3000/
+     *  http://localhost:3000/auth/register
+     */
 const authController = require('./controllers/authController');
 
 app.get('/register', (req, res) => {
