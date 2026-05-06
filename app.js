@@ -11,6 +11,18 @@ const app = express();
      */
 const authController = require('./controllers/authController');
 
+// 1. Importar el controlador de posts (lo crearemos pronto)
+// const postController = require('./controllers/postController');
+
+// 2. Ruta para ver el formulario de creación
+app.get('/posts/create', (req, res) => {
+    res.render('createPost', { title: 'Subir Publicación' });
+});
+
+// 3. Ruta para procesar la subida (la usaremos cuando hagamos el backend)
+// app.post('/posts/create', postController.create);
+
+
 app.get('/register', (req, res) => {
     res.render('register');
 });

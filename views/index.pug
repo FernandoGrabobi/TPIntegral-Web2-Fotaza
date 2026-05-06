@@ -4,8 +4,22 @@ html(lang="es")
     title= title
     link(rel="stylesheet", href="/css/style.css")
   body
-    h1= title
-    p= message
-    hr
-    p Estado del sistema: 
-      span(style="color: green") Online
+    header
+      h1 Fotaza 2 📸
+      nav
+        a(href="/") Inicio
+        |  | 
+        a(href="/posts/create") Subir Foto
+        |  | 
+        a(href="/auth/register") Registro
+    
+    main
+      h2 Explorar la comunidad
+      p= message
+      
+      .gallery-container
+        // Aquí iría el loop de Sequelize cuando pasemos los datos
+        // each post in posts
+        //   .post-card
+        //     img(src=post.media_url, width="200")
+        //     p= post.title

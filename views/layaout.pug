@@ -1,0 +1,21 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Fotaza 2 - #{title}
+    link(rel="stylesheet", href="/css/style.css")
+  body
+    header
+      nav
+        ul
+          li: a(href="/") Inicio
+          li: a(href="/posts/create") Subir Foto
+          li: a(href="/auth/register") Registro
+          // Aquí después pondremos el Login/Logout con las sesiones
+    
+    main
+      block content
+
+    footer
+      p &copy; 2026 TPI Fotaza 2 - Web 2
