@@ -1,25 +1,17 @@
-doctype html
-html(lang="es")
-  head
-    title= title
-    link(rel="stylesheet", href="/css/style.css")
-  body
-    header
-      h1 Fotaza 2 📸
-      nav
-        a(href="/") Inicio
-        |  | 
-        a(href="/posts/create") Subir Foto
-        |  | 
-        a(href="/auth/register") Registro
-    
-    main
-      h2 Explorar la comunidad
-      p= message
-      
-      .gallery-container
-        // Aquí iría el loop de Sequelize cuando pasemos los datos
-        // each post in posts
-        //   .post-card
-        //     img(src=post.media_url, width="200")
-        //     p= post.title
+extends layout
+
+block content
+  h1= message
+  hr
+  
+  if posts && posts.length > 0
+    .gallery
+      each post in posts
+        .post-card
+          img(src=post.media_url, alt=post.title, class="img-thumb")
+          .post-info
+            h3= post.title
+            p= post.description
+            span.license= post.license_type === 'copyright' ? '© Copyright' : 'CC'
+  else
+    p No hay publicaciones todavía. ¡Sé el primero en subir una!
