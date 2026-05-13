@@ -1,22 +1,18 @@
-const { User } = require('../models');
+const {User} = require('../models');
 const bcrypt = require('bcrypt');
 
-                // GET /auth/login
 exports.showLogin=(req, res)=>{
   if (req.session.userId) return res.redirect('/');
   res.render('auth/login', { title: 'Iniciar sesión' });
 };
-                // GET /auth/register
 exports.showRegister=(req, res)=>{
   if (req.session.userId) return res.redirect('/');
   res.render('auth/register', { title: 'Crear cuenta' });
 };
 
-// POST /auth/register
 exports.register = async (req, res)=>{
-    try {
-        const { username, email, password, confirmPassword }=req.body;
-                    // Validaciones
+    try{
+      const { username, email, password, confirmPassword }=req.body;
       if(!username || !email || !password){
         req.session.flash={type: 'error', message: 'Todos los campos son obligatorios.'};
         return res.redirect('/auth/register');
@@ -50,7 +46,6 @@ exports.register = async (req, res)=>{
         status: 'active'
       });
 
-                  // Iniciar sesión automáticamente
         req.session.userId = user.id;
         req.session.userRole = user.role;
         req.session.flash = { type: 'success', message: `¡Bienvenido/a, ${user.username}!` };
@@ -62,7 +57,6 @@ exports.register = async (req, res)=>{
     }
 };
 
-            // POST /auth/login
 exports.login = async (req, res) =>{
     try{
         const{email, password} = req.body;
