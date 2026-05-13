@@ -1,53 +1,48 @@
-require('dotenv').config(); // Carga las variables del .env
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+
 const app = express();
- /**
-     *  nodemon app.js
-     *  para arrancar el servidor
-     *  http://localhost:3000/
-     *  http://localhost:3000/auth/register
-     */
-const authController = require('./controllers/authController');
 
-// 1. Importar el controlador de posts (lo crearemos pronto)
-// const postController = require('./controllers/postController');
-
-// 2. Ruta para ver el formulario de creación
-app.get('/posts/create', (req, res) => {
-    res.render('createPost', { title: 'Subir Publicación' });
-});
-
-// 3. Ruta para procesar la subida (la usaremos cuando hagamos el backend)
-// app.post('/posts/create', postController.create);
-
-
-app.get('/register', (req, res) => {
-    res.render('register');
-});
+// ── Middlewares globales ──────────────────────────
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.json()); 
+// ── Sesión ────────────────────────────────────────
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'secreto_fotaza_dev',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24hs
+}));
 
-app.use(express.static(path.join(__dirname, 'public'))); 
-
-app.post('/auth/register', authController.register);
-
+// ── Motor de vistas PUG ───────────────────────────
 app.set('view engine', 'pug');
-
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(session({
-  secret: 'secreto_fotaza',
-  resave: false,
-  saveUninitialized: false
-}));
-app.get('/', (req, res) => {
-  res.render('index', { title: 'Fotaza 2', message: '¡Bienvenido a la comunidad!' });
+// ── Middleware de usuario actual en todas las vistas
+const { setCurrentUser } = require('./middlewares/auth');
+app.use(setCurrentUser);
+
+// ── Rutas ─────────────────────────────────────────
+const routes = require('./routes/index');
+app.use('/', routes);
+
+// ── 404 ───────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).render('error', { title: '404', message: 'Página no encontrada.' });
 });
 
-const PORT = 3000;
+// ── Error handler ─────────────────────────────────
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('error', { title: 'Error', message: 'Ocurrió un error interno.' });
+});
+
+// ── Iniciar servidor ──────────────────────────────
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`✅ Fotaza 2 corriendo en http://localhost:${PORT}`);
 });
