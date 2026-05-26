@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  .max-w-3xl.mx-auto.px-4.py-8
+    h1.text-2xl.font-bold.text-gray-800.mb-6 💚 Interesados en mis publicaciones
+
+    if interests && interests.length > 0
+      .space-y-4
+        each item in interests
+          .bg-white.rounded-2xl.shadow.p-5.flex.items-center.justify-between.flex-wrap.gap-4
+            .flex.items-center.gap-3
+              if item.user && item.user.avatar
+                img.w-12.h-12.rounded-full.object-cover(src=`/uploads/${item.user.avatar}`)
+              else
+                .w-12.h-12.rounded-full.bg-orange-400.flex.items-center.justify-center.text-white.font-bold.text-lg
+                  = item.user ? item.user.username[0].toUpperCase() : '?'
+              div
+                p.font-semibold.text-gray-800= item.user ? item.user.username : 'Usuario'
+                p.text-xs.text-gray-400= item.user ? item.user.email : ''
+            .flex.items-center.gap-3
+              if item.post
+                a.text-sm.text-orange-500.hover_underline(href=`/posts/${item.post.id}`) → #{item.post.title}
+              a.bg-orange-500.text-white.text-sm.px-4.py-2.rounded-full.hover_bg-orange-600(
+                href=`/messages/${item.user ? item.user.id : '#'}`
+              ) ✉️ Contactar
+    else
+      .text-center.py-16.text-gray-400
+        p.text-5xl.mb-4 💚
+        p.text-lg Nadie marcó interés en tus publicaciones todavía.

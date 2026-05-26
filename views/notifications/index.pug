@@ -1,0 +1,50 @@
+extends ../layout
+
+block content
+  .max-w-2xl.mx-auto.px-4.py-8
+    .flex.items-center.justify-between.mb-6
+      h1.text-2xl.font-bold.text-gray-800 🔔 Notificaciones
+      if notifications && notifications.some(n => !n.read)
+        form(action="/notifications/read-all" method="POST")
+          button.text-sm.text-orange-500.hover_underline(type="submit") Marcar todas como leídas
+
+    if notifications && notifications.length > 0
+      .space-y-2
+        each notif in notifications
+          .flex.items-center.gap-4.bg-white.rounded-xl.shadow-sm.p-4(class=notif.read ? 'opacity-60' : 'border-l-4 border-orange-400')
+            //- Ícono por tipo
+            .text-2xl
+              case notif.type
+                when 'comment'
+                  | 💬
+                when 'rating'
+                  | ⭐
+                when 'interested'
+                  | 💚
+                when 'follow'
+                  | 👤
+            .flex-1
+              p.text-sm.text-gray-700
+                if notif.actor
+                  strong= notif.actor.username
+                  |  &nbsp;
+                case notif.type
+                  when 'comment'
+                    | comentó tu publicación
+                  when 'rating'
+                    | valoró una de tus imágenes
+                  when 'interested'
+                    | marcó interés en tu publicación
+                  when 'follow'
+                    | comenzó a seguirte
+                if notif.post
+                  | &nbsp;·&nbsp;
+                  a.text-orange-500.hover_underline(href=`/posts/${notif.post.id}`)= notif.post.title
+              p.text-xs.text-gray-400.mt-0.5= new Date(notif.createdAt).toLocaleDateString('es-AR', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})
+            if !notif.read
+              form(action=`/notifications/${notif.id}/read` method="POST")
+                button.text-xs.text-gray-400.hover_text-orange-500.border.border-gray-200.px-2.py-1.rounded(type="submit") ✓ Leída
+    else
+      .text-center.py-16.text-gray-400
+        p.text-5xl.mb-4 🔔
+        p.text-lg No tenés notificaciones.

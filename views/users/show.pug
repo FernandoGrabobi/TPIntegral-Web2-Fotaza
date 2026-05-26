@@ -1,0 +1,57 @@
+extends ../layout
+
+block content
+  .max-w-5xl.mx-auto.px-4.py-8
+
+    //- Cabecera del perfil
+    .bg-white.rounded-2xl.shadow.p-6.mb-6
+      .flex.items-center.gap-6.flex-wrap
+        if profileUser.avatar
+          img.w-24.h-24.rounded-full.object-cover.border-4.border-orange-200(src=`/uploads/${profileUser.avatar}`)
+        else
+          .w-24.h-24.rounded-full.bg-orange-500.flex.items-center.justify-center.text-white.font-extrabold.text-4xl.border-4.border-orange-200
+            = profileUser.username[0].toUpperCase()
+        .flex-1
+          h1.text-2xl.font-bold.text-gray-900= profileUser.username
+          if profileUser.bio
+            p.text-gray-500.mt-1= profileUser.bio
+          .flex.gap-6.mt-3
+            .text-center
+              p.text-xl.font-bold.text-gray-800= followersCount
+              p.text-xs.text-gray-400 seguidores
+            .text-center
+              p.text-xl.font-bold.text-gray-800= followingCount
+              p.text-xs.text-gray-400 siguiendo
+            .text-center
+              p.text-xl.font-bold.text-gray-800= posts ? posts.length : 0
+              p.text-xs.text-gray-400 publicaciones
+          p.text-xs.text-gray-400.mt-2 Miembro desde #{new Date(profileUser.createdAt).toLocaleDateString('es-AR', {month:'long', year:'numeric'})}
+
+        //- Botón seguir/dejar de seguir
+        if currentUser && currentUser.id !== profileUser.id
+          div
+            if isFollowing
+              form(action=`/users/${profileUser.id}/unfollow` method="POST")
+                button.bg-gray-100.text-gray-700.font-semibold.px-6.py-2.rounded-full.hover_bg-gray-200.border.border-gray-300(type="submit")
+                  | ✓ Siguiendo
+            else
+              form(action=`/users/${profileUser.id}/follow` method="POST")
+                button.bg-orange-500.text-white.font-semibold.px-6.py-2.rounded-full.hover_bg-orange-600(type="submit")
+                  | + Seguir
+            a.block.text-center.mt-2.text-sm.text-orange-500.hover_underline(href=`/messages/${profileUser.id}`) ✉️ Enviar mensaje
+
+    //- Publicaciones del usuario
+    h2.text-xl.font-bold.text-gray-800.mb-4 Publicaciones de #{profileUser.username}
+
+    if posts && posts.length > 0
+      .grid.grid-cols-2.sm_grid-cols-3.md_grid-cols-4.gap-4
+        each post in posts
+          a.block.rounded-xl.overflow-hidden.bg-gray-100.aspect-square.hover_opacity-90.transition-opacity(href=`/posts/${post.id}`)
+            if post.images && post.images.length > 0
+              img.w-full.h-full.object-cover(src=`/uploads/${post.images[0].filename}` alt=post.title)
+            else
+              .w-full.h-full.flex.items-center.justify-center.text-4xl 🖼️
+    else
+      .text-center.py-12.text-gray-400
+        p.text-5xl.mb-3 📷
+        p Este usuario no tiene publicaciones aún.

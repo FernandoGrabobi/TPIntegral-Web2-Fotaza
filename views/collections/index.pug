@@ -1,0 +1,53 @@
+extends ../layout
+
+block content
+  .max-w-5xl.mx-auto.px-4.py-8
+    .flex.items-center.justify-between.mb-6
+      h1.text-2xl.font-bold.text-gray-800 🔖 Mis Colecciones
+
+    //- Crear colección
+    .bg-white.rounded-2xl.shadow.p-5.mb-8
+      h2.text-lg.font-semibold.text-gray-700.mb-3 Nueva colección
+      form.flex.gap-3(action="/collections/create" method="POST")
+        input.flex-1.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(
+          type="text" name="name" required placeholder="Nombre de la colección (ej: Paisajes)"
+        )
+        input.flex-1.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(
+          type="text" name="description" placeholder="Descripción opcional"
+        )
+        button.bg-orange-500.hover_bg-orange-600.text-white.font-semibold.px-5.py-2.rounded-xl(type="submit") Crear
+
+    //- Lista de colecciones
+    if collections && collections.length > 0
+      .grid.grid-cols-1.md_grid-cols-2.gap-6
+        each col in collections
+          .bg-white.rounded-2xl.shadow.overflow-hidden
+            .flex.items-start.justify-between.p-5.border-b.border-gray-100
+              div
+                h3.font-bold.text-gray-800.text-lg= col.name
+                if col.description
+                  p.text-sm.text-gray-400.mt-0.5= col.description
+                p.text-xs.text-gray-400.mt-1
+                  | #{col.posts ? col.posts.length : 0} publicación(es)
+              form(action=`/collections/${col.id}/delete` method="POST" onsubmit="return confirm('¿Eliminar colección?')")
+                button.text-red-400.hover_text-red-600.text-sm(type="submit") 🗑️
+
+            //- Preview de imágenes
+            if col.posts && col.posts.length > 0
+              .grid.grid-cols-3.gap-1.p-3
+                each post in col.posts.slice(0, 6)
+                  a.block.h-20.rounded-lg.overflow-hidden.bg-gray-100(href=`/posts/${post.id}`)
+                    if post.images && post.images.length > 0
+                      img.w-full.h-full.object-cover(src=`/uploads/${post.images[0].filename}`)
+                    else
+                      .w-full.h-full.flex.items-center.justify-center.text-2xl 🖼️
+            else
+              .p-5.text-center.text-gray-400.text-sm Esta colección está vacía.
+    else
+      .text-center.py-16.text-gray-400
+        p.text-5xl.mb-4 🔖
+        p.text-lg No tenés colecciones todavía.
+
+  //- Nota de uso
+  .max-w-5xl.mx-auto.px-4.pb-6
+    p.text-xs.text-gray-400.text-center Para guardar una publicación, andá al detalle de la misma y hacé clic en "🔖 Guardar".

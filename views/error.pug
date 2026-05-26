@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  .max-w-2xl.mx-auto.px-4.py-24.text-center
+    p.text-8xl.mb-6 😕
+    h1.text-4xl.font-bold.text-gray-800.mb-4 ¡Ups!
+    p.text-lg.text-gray-500.mb-8= message || 'Algo salió mal.'
+    a.inline-block.bg-orange-500.hover_bg-orange-600.text-white.font-semibold.px-6.py-3.rounded-full(href="/") Volver al inicio

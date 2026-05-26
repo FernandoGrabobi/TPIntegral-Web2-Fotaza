@@ -1,0 +1,51 @@
+extends ../layout
+
+block content
+  .max-w-5xl.mx-auto.px-4.py-8
+    .flex.items-center.gap-3.mb-6
+      span.text-3xl 🛡️
+      div
+        h1.text-2xl.font-bold.text-gray-800 Panel de Moderación
+        p.text-sm.text-gray-400 Publicaciones con más de 3 denuncias de diferentes usuarios
+
+    if posts && posts.length > 0
+      .space-y-6
+        each post in posts
+          .bg-white.rounded-2xl.shadow.overflow-hidden
+            .bg-yellow-50.border-b.border-yellow-200.p-4.flex.items-center.justify-between
+              div
+                h2.font-bold.text-gray-800= post.title
+                p.text-sm.text-gray-500
+                  | Autor:&nbsp;
+                  a.text-orange-500.hover_underline(href=`/users/${post.author.id}`)= post.author.username
+                  | &nbsp;·&nbsp;
+                  a.text-blue-500.hover_underline(href=`/posts/${post.id}` target="_blank") Ver publicación ↗
+              span.bg-yellow-200.text-yellow-800.text-sm.font-semibold.px-3.py-1.rounded-full
+                | #{post.reports ? post.reports.length : 0} denuncia(s)
+
+            //- Lista de denuncias
+            if post.reports && post.reports.length > 0
+              .divide-y.divide-gray-100
+                each report in post.reports
+                  .p-4.flex.items-start.gap-3
+                    span.text-red-400 🚩
+                    div
+                      p.text-sm.font-medium.text-gray-700
+                        | #{report.reason.replace('_', ' ')}
+                        if report.reporter
+                          span.text-gray-400.font-normal  · por #{report.reporter.username}
+                      p.text-sm.text-gray-500.mt-0.5= report.description
+
+            //- Acciones del validador
+            .flex.gap-3.p-4.bg-gray-50.border-t.border-gray-100
+              form(action=`/validator/posts/${post.id}/remove` method="POST" onsubmit="return confirm('¿Dar de baja esta publicación?')")
+                button.bg-red-500.hover_bg-red-600.text-white.font-semibold.px-5.py-2.rounded-xl(type="submit")
+                  | 🗑️ Dar de baja
+              form(action=`/validator/posts/${post.id}/dismiss` method="POST" onsubmit="return confirm('¿Desestimar las denuncias?')")
+                button.bg-green-500.hover_bg-green-600.text-white.font-semibold.px-5.py-2.rounded-xl(type="submit")
+                  | ✓ Desestimar denuncias
+    else
+      .text-center.py-20.text-gray-400
+        p.text-5xl.mb-4 ✅
+        p.text-xl No hay publicaciones pendientes de revisión.
+        p.text-sm.mt-2 ¡Genial! Todo está limpio.

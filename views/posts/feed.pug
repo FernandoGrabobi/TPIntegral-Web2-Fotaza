@@ -1,0 +1,34 @@
+extends ../layout
+
+block content
+  .max-w-4xl.mx-auto.px-4.py-8
+    h1.text-2xl.font-bold.text-gray-800.mb-6 📡 Publicaciones de usuarios que sigo
+
+    if posts && posts.length > 0
+      .space-y-6
+        each post in posts
+          .bg-white.rounded-2xl.shadow.overflow-hidden
+            .flex.items-center.gap-3.p-4.border-b.border-gray-100
+              a(href=`/users/${post.author.id}`)
+                if post.author.avatar
+                  img.w-10.h-10.rounded-full.object-cover(src=`/uploads/${post.author.avatar}`)
+                else
+                  .w-10.h-10.rounded-full.bg-orange-500.flex.items-center.justify-center.text-white.font-bold= post.author.username[0].toUpperCase()
+              div
+                a.font-semibold.text-gray-800.hover_text-orange-500(href=`/users/${post.author.id}`)= post.author.username
+                p.text-xs.text-gray-400= new Date(post.createdAt).toLocaleDateString('es-AR', {day:'2-digit',month:'long'})
+            a.block(href=`/posts/${post.id}`)
+              if post.images && post.images.length > 0
+                .h-64.bg-gray-100.overflow-hidden
+                  img.w-full.h-full.object-cover.hover_scale-105.transition-transform(src=`/uploads/${post.images[0].filename}` alt=post.title)
+            .p-4
+              a.font-semibold.text-gray-800.hover_text-orange-500(href=`/posts/${post.id}`)= post.title
+              if post.tags && post.tags.length > 0
+                .flex.flex-wrap.gap-1.mt-2
+                  each tag in post.tags
+                    span.text-xs.bg-orange-50.text-orange-600.px-2.py-0.5.rounded-full ##{tag.name}
+    else
+      .text-center.py-20.text-gray-400
+        p.text-6xl.mb-4 👥
+        p.text-lg No seguís a ningún usuario todavía.
+        a.mt-4.inline-block.bg-orange-500.text-white.px-6.py-2.rounded-full(href="/search") Explorar publicaciones

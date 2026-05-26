@@ -1,0 +1,198 @@
+extends ../layout
+
+block content
+  .max-w-4xl.mx-auto.px-4.py-8
+
+    //- Cabecera del autor
+    .flex.items-center.justify-between.mb-6
+      a.flex.items-center.gap-3(href=`/users/${post.author.id}`)
+        if post.author.avatar
+          img.w-12.h-12.rounded-full.object-cover(src=`/uploads/${post.author.avatar}` alt=post.author.username)
+        else
+          .w-12.h-12.rounded-full.bg-orange-500.flex.items-center.justify-center.text-white.font-bold.text-lg= post.author.username[0].toUpperCase()
+        div
+          p.font-semibold.text-gray-800= post.author.username
+          p.text-xs.text-gray-400= new Date(post.createdAt).toLocaleDateString('es-AR', {day:'2-digit',month:'long',year:'numeric'})
+
+      //- Acciones del autor
+      if currentUser && currentUser.id === post.author.id
+        .flex.gap-2
+          a.text-sm.border.border-gray-300.px-3.py-1.5.rounded-lg.hover_bg-gray-50(href=`/posts/${post.id}/edit`) ✏️ Editar
+          form(action=`/posts/${post.id}/delete` method="POST" onsubmit="return confirm('¿Eliminar publicación?')")
+            button.text-sm.border.border-red-200.text-red-500.px-3.py-1.5.rounded-lg.hover_bg-red-50(type="submit") 🗑️ Eliminar
+      else if currentUser
+        //- Seguir al autor
+        if userFollows
+          form(action=`/users/${post.author.id}/unfollow` method="POST")
+            button.text-sm.bg-gray-100.text-gray-600.px-4.py-2.rounded-full.hover_bg-gray-200(type="submit") ✓ Siguiendo
+        else
+          form(action=`/users/${post.author.id}/follow` method="POST")
+            button.text-sm.bg-orange-500.text-white.px-4.py-2.rounded-full.hover_bg-orange-600(type="submit") + Seguir
+
+    //- Imágenes
+    if post.images && post.images.length > 0
+      .mb-6
+        if post.images.length === 1
+          .rounded-2xl.overflow-hidden.max-h-96.bg-gray-100
+            img.w-full.h-full.object-contain(src=`/uploads/${post.images[0].filename}` alt=post.title)
+        else
+          .grid.grid-cols-2.md_grid-cols-3.gap-3
+            each img in post.images
+              .rounded-xl.overflow-hidden.h-48.bg-gray-100
+                img.w-full.h-full.object-cover(src=`/uploads/${img.filename}` alt=post.title)
+
+    //- Info del post
+    .bg-white.rounded-2xl.shadow.p-6.mb-6
+      .flex.items-start.justify-between.flex-wrap.gap-3
+        div
+          h1.text-2xl.font-bold.text-gray-900.mb-2= post.title
+          if post.description
+            p.text-gray-600.mb-3= post.description
+          //- Tags
+          if post.tags && post.tags.length > 0
+            .flex.flex-wrap.gap-2.mb-3
+              each tag in post.tags
+                a.bg-orange-50.text-orange-600.text-sm.px-3.py-1.rounded-full.hover_bg-orange-100(href=`/search?tag=${tag.name}`) ##{tag.name}
+          //- Licencia
+          .flex.items-center.gap-3.text-sm.text-gray-500
+            if post.license_type === 'copyright'
+              span.bg-yellow-50.text-yellow-700.px-2.py-1.rounded-full © Copyright
+              if post.watermark_text
+                span #{post.watermark_text}
+            else
+              span.bg-green-50.text-green-700.px-2.py-1.rounded-full ✓ Libre de uso
+
+        //- Valoración
+        .text-center
+          if post.ratings_count > 0
+            .text-4xl.font-bold.text-orange-500= parseFloat(post.avg_rating).toFixed(1)
+            p.text-yellow-500 ★★★★★
+            p.text-xs.text-gray-400 #{post.ratings_count} valoración(es)
+          else
+            p.text-gray-400.text-sm Sin valoraciones
+
+      //- Acciones
+      if currentUser && currentUser.id !== post.author.id
+        .flex.flex-wrap.gap-3.mt-5.pt-5.border-t.border-gray-100
+
+          //- Valorar
+          if !userRating
+            form.flex.items-center.gap-2(action=`/posts/${post.id}/rate` method="POST")
+              label.text-sm.font-medium.text-gray-700 Valorar:
+              select.border.border-gray-300.rounded-lg.px-2.py-1.text-sm.focus_outline-none.focus_border-orange-400(name="score")
+                option(value="5") ⭐⭐⭐⭐⭐ (5)
+                option(value="4") ⭐⭐⭐⭐ (4)
+                option(value="3") ⭐⭐⭐ (3)
+                option(value="2") ⭐⭐ (2)
+                option(value="1") ⭐ (1)
+              button.bg-yellow-400.hover_bg-yellow-500.text-white.text-sm.px-3.py-1.rounded-lg(type="submit") Valorar
+          else
+            span.text-sm.text-gray-400 Ya valoraste esta publicación (#{userRating.score}★)
+
+          //- Me interesa
+          if !userInterested
+            form(action=`/posts/${post.id}/interested` method="POST")
+              button.bg-green-500.hover_bg-green-600.text-white.text-sm.px-4.py-2.rounded-lg(type="submit") 💚 Me interesa
+          else
+            span.text-sm.text-gray-400 Ya marcaste interés
+
+          //- Guardar en colección
+          a.border.border-gray-300.text-gray-600.text-sm.px-4.py-2.rounded-lg.hover_bg-gray-50(href="/collections") 🔖 Guardar
+
+          //- Denunciar
+          button.text-red-400.text-sm.hover_text-red-600.border.border-red-200.px-3.py-2.rounded-lg(
+            onclick="document.getElementById('report-modal').classList.toggle('hidden')"
+          ) 🚩 Denunciar
+
+      //- Modal denuncia
+      #report-modal.hidden.mt-4.bg-red-50.border.border-red-200.rounded-xl.p-4
+        h3.font-semibold.text-red-700.mb-3 Denunciar publicación
+        form(action=`/posts/${post.id}/report` method="POST")
+          .mb-3
+            label.block.text-sm.font-medium.text-gray-700.mb-1 Motivo
+            select.w-full.border.border-gray-300.rounded-lg.px-3.py-2.text-sm.focus_outline-none(name="reason" required)
+              option(value="spam") Spam
+              option(value="violence") Violencia
+              option(value="adult_content") Contenido adulto
+              option(value="copyright") Violación de copyright
+              option(value="harassment") Acoso
+              option(value="other") Otro
+          .mb-3
+            textarea.w-full.border.border-gray-300.rounded-lg.px-3.py-2.text-sm.focus_outline-none.resize-none(
+              name="description" rows="2" placeholder="Describí el problema..." required
+            )
+          .flex.gap-2
+            button.bg-red-500.text-white.text-sm.px-4.py-2.rounded-lg.hover_bg-red-600(type="submit") Enviar denuncia
+            button.text-gray-500.text-sm.px-4.py-2.rounded-lg.hover_bg-gray-100(
+              type="button" onclick="document.getElementById('report-modal').classList.add('hidden')"
+            ) Cancelar
+
+    //- Comentarios
+    .bg-white.rounded-2xl.shadow.p-6
+      .flex.items-center.justify-between.mb-4
+        h2.text-lg.font-bold.text-gray-800 💬 Comentarios
+          if post.comments
+            span.ml-2.text-sm.font-normal.text-gray-400= `(${post.comments.length})`
+        if currentUser && currentUser.id === post.author.id
+          form(action=`/posts/${post.id}/toggle-comments` method="POST")
+            button.text-sm.border.border-gray-300.px-3.py-1.rounded-lg.hover_bg-gray-50(type="submit")
+              = post.comments_open ? '🔒 Cerrar comentarios' : '🔓 Abrir comentarios'
+
+      //- Formulario nuevo comentario
+      if currentUser
+        if post.comments_open
+          form.flex.gap-3.mb-6(action=`/posts/${post.id}/comments` method="POST")
+            if currentUser.avatar
+              img.w-9.h-9.rounded-full.object-cover.flex-shrink-0(src=`/uploads/${currentUser.avatar}` alt=currentUser.username)
+            else
+              .w-9.h-9.rounded-full.bg-orange-500.flex-shrink-0.flex.items-center.justify-center.text-white.font-bold.text-sm= currentUser.username[0].toUpperCase()
+            div.flex-1
+              textarea.w-full.border.border-gray-300.rounded-xl.px-4.py-2.text-sm.focus_outline-none.focus_border-orange-400.resize-none(
+                name="content" rows="2" placeholder="Escribí un comentario..." required
+              )
+              button.mt-2.bg-orange-500.hover_bg-orange-600.text-white.text-sm.px-4.py-2.rounded-lg(type="submit") Comentar
+        else
+          p.text-sm.text-gray-400.bg-gray-50.rounded-xl.p-3.mb-4 🔒 El autor cerró los comentarios.
+      else
+        p.text-sm.text-gray-400.mb-4
+          a.text-orange-500.hover_underline(href="/auth/login") Iniciá sesión
+          |  para comentar.
+
+      //- Lista de comentarios
+      if post.comments && post.comments.length > 0
+        .space-y-4
+          each comment in post.comments
+            .flex.gap-3
+              if comment.author && comment.author.avatar
+                img.w-9.h-9.rounded-full.object-cover.flex-shrink-0(src=`/uploads/${comment.author.avatar}`)
+              else
+                .w-9.h-9.rounded-full.bg-gray-300.flex-shrink-0.flex.items-center.justify-center.text-gray-600.font-bold.text-sm
+                  = comment.author ? comment.author.username[0].toUpperCase() : '?'
+              .flex-1.bg-gray-50.rounded-xl.p-3
+                .flex.items-center.justify-between.mb-1
+                  span.font-medium.text-sm.text-gray-800= comment.author ? comment.author.username : 'Usuario'
+                  span.text-xs.text-gray-400= new Date(comment.createdAt).toLocaleDateString('es-AR')
+                p.text-sm.text-gray-700= comment.content
+                if currentUser
+                  .flex.gap-2.mt-2
+                    //- Borrar (autor del post o del comentario)
+                    if currentUser.id === post.author.id || currentUser.id === comment.userId
+                      form(action=`/comments/${comment.id}/delete` method="POST" onsubmit="return confirm('¿Eliminar?')")
+                        button.text-xs.text-red-400.hover_text-red-600(type="submit") 🗑️ Eliminar
+                    //- Denunciar comentario (no el autor)
+                    else
+                      button.text-xs.text-gray-400.hover_text-red-500(
+                        onclick=`document.getElementById('cr-${comment.id}').classList.toggle('hidden')`
+                      ) 🚩 Denunciar
+                    //- Modal denuncia comentario
+                    ##{`cr-${comment.id}`}.hidden.mt-2.w-full
+                      form(action=`/comments/${comment.id}/report` method="POST")
+                        select.border.text-xs.rounded.px-2.py-1.mb-1(name="reason" required)
+                          option(value="spam") Spam
+                          option(value="harassment") Acoso
+                          option(value="violence") Violencia
+                          option(value="other") Otro
+                        input.border.text-xs.rounded.px-2.py-1.w-full.mb-1(type="text" name="description" placeholder="Descripción" required)
+                        button.bg-red-500.text-white.text-xs.px-3.py-1.rounded(type="submit") Enviar
+      else
+        p.text-sm.text-gray-400.text-center.py-6 No hay comentarios todavía.

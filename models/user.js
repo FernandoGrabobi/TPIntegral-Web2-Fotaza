@@ -3,23 +3,22 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) =>{
   class User extends Model{
-    static associate(models){
-      User.hasMany(models.Post,{foreignKey:'userId', as:'posts'});
-      User.hasMany(models.Comment,{ oreignKey:'userId', as:'comments'});
-      User.hasMany(models.Rating,{foreignKey:'userId', as:'ratings'});
-      User.hasMany(models.Report,{foreignKey:'userId', as:'reports'});
-      User.hasMany(models.Notification,{foreignKey:'userId', as:'notifications'});
-      User.hasMany(models.Collection,{foreignKey:'userId', as:'collections'});
-      User.hasMany(models.Message,{foreignKey:'senderId', as:'sentMessages'});
-      User.hasMany(models.Message,{foreignKey:'receiverId', as:'receivedMessages'});
-      // Follows: un usuario sigue a otros
-      User.belongsToMany(models.User,{
+    static associate(models) {
+      User.hasMany(models.Post, { foreignKey: 'userId', as: 'posts' });
+      User.hasMany(models.Comment, { foreignKey: 'userId', as: 'comments' });
+      User.hasMany(models.Rating, { foreignKey: 'userId', as: 'ratings' });
+      User.hasMany(models.Report, { foreignKey: 'userId', as: 'reports' });
+      User.hasMany(models.Notification, { foreignKey: 'userId', as: 'notifications' });
+      User.hasMany(models.Collection, { foreignKey: 'userId', as: 'collections' });
+      User.hasMany(models.Message, { foreignKey: 'senderId', as: 'sentMessages' });
+      User.hasMany(models.Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
+      User.belongsToMany(models.User, {
         through: models.Follow,
         as: 'following',
         foreignKey: 'followerId',
         otherKey: 'followingId'
       });
-      User.belongsToMany(models.User,{
+      User.belongsToMany(models.User, {
         through: models.Follow,
         as: 'followers',
         foreignKey: 'followingId',

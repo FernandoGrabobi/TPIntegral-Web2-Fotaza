@@ -1,0 +1,80 @@
+extends ../layout
+
+block content
+  .max-w-7xl.mx-auto.px-4.py-8
+
+    //- Formulario de búsqueda
+    .bg-white.rounded-2xl.shadow.p-6.mb-8
+      h1.text-xl.font-bold.text-gray-800.mb-4 🔍 Buscar publicaciones
+      form(action="/search" method="GET")
+        .grid.grid-cols-1.md_grid-cols-3.gap-4.mb-4
+          div
+            label.block.text-xs.font-semibold.text-gray-500.mb-1.uppercase.tracking-wide Texto
+            input.w-full.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(
+              type="text" name="q" placeholder="Título o descripción..." value=query.q || ''
+            )
+          div
+            label.block.text-xs.font-semibold.text-gray-500.mb-1.uppercase.tracking-wide Etiqueta
+            input.w-full.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(
+              type="text" name="tag" placeholder="paisaje, retrato..." value=query.tag || ''
+            )
+          div
+            label.block.text-xs.font-semibold.text-gray-500.mb-1.uppercase.tracking-wide Autor
+            input.w-full.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(
+              type="text" name="author" placeholder="Nombre de usuario..." value=query.author || ''
+            )
+        .grid.grid-cols-1.md_grid-cols-3.gap-4.mb-4
+          div
+            label.block.text-xs.font-semibold.text-gray-500.mb-1.uppercase.tracking-wide Licencia
+            select.w-full.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(name="license")
+              option(value="" selected=!query.license) Todas
+              option(value="free" selected=query.license==='free') Sin copyright
+              option(value="copyright" selected=query.license==='copyright') Con copyright
+          div
+            label.block.text-xs.font-semibold.text-gray-500.mb-1.uppercase.tracking-wide Puntaje mínimo
+            select.w-full.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(name="min_rating")
+              option(value="" selected=!query.min_rating) Cualquiera
+              option(value="4" selected=query.min_rating==='4') 4+ estrellas ⭐⭐⭐⭐
+              option(value="3" selected=query.min_rating==='3') 3+ estrellas ⭐⭐⭐
+          div
+            label.block.text-xs.font-semibold.text-gray-500.mb-1.uppercase.tracking-wide Ordenar por
+            select.w-full.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(name="sort_by")
+              option(value="" selected=!query.sort_by) Más recientes
+              option(value="rating" selected=query.sort_by==='rating') Mejor valoradas
+              option(value="oldest" selected=query.sort_by==='oldest') Más antiguas
+        button.bg-orange-500.hover_bg-orange-600.text-white.font-bold.px-6.py-2.rounded-xl(type="submit") 🔍 Buscar
+
+    //- Resultados
+    .flex.items-center.justify-between.mb-4
+      p.text-sm.text-gray-500
+        if posts && posts.length > 0
+          | #{posts.length} resultado(s) encontrado(s)
+        else
+          | Sin resultados
+
+    if posts && posts.length > 0
+      .grid.grid-cols-1.sm_grid-cols-2.md_grid-cols-3.lg_grid-cols-4.gap-5
+        each post in posts
+          a.group.block.bg-white.rounded-2xl.shadow.hover_shadow-lg.overflow-hidden.transition-all(href=`/posts/${post.id}`)
+            .h-48.bg-gray-100.overflow-hidden.relative
+              if post.images && post.images.length > 0
+                img.w-full.h-full.object-cover.group-hover_scale-105.transition-transform(src=`/uploads/${post.images[0].filename}` alt=post.title)
+              else
+                .w-full.h-full.flex.items-center.justify-center.text-5xl 🖼️
+              if post.license_type === 'copyright'
+                span.absolute.top-2.right-2.bg-black.bg-opacity-70.text-white.text-xs.px-2.py-0.5.rounded-full ©
+            .p-4
+              h3.font-semibold.text-gray-800.truncate= post.title
+              .flex.items-center.justify-between.text-xs.text-gray-400.mt-1
+                span= post.author ? post.author.username : ''
+                span
+                  if post.ratings_count > 0
+                    | ★ #{parseFloat(post.avg_rating).toFixed(1)}
+              if post.tags && post.tags.length > 0
+                .flex.flex-wrap.gap-1.mt-2
+                  each tag in post.tags.slice(0,3)
+                    span.text-xs.bg-orange-50.text-orange-600.px-2.py-0.5.rounded-full ##{tag.name}
+    else
+      .text-center.py-16.text-gray-400
+        p.text-5xl.mb-4 🔍
+        p.text-lg Ninguna publicación coincide con los filtros.

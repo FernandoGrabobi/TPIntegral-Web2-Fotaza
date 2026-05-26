@@ -1,0 +1,41 @@
+extends ../layout
+
+block content
+  .max-w-3xl.mx-auto.px-4.py-8
+    h1.text-2xl.font-bold.text-gray-800.mb-6 ✉️ Mensajes
+
+    if received && received.length > 0
+      h2.text-lg.font-semibold.text-gray-700.mb-3 Recibidos
+      .space-y-3.mb-8
+        each msg in received
+          a.flex.items-center.gap-3.bg-white.rounded-xl.shadow-sm.p-4.hover_shadow.transition(href=`/messages/${msg.sender.id}`)
+            if msg.sender.avatar
+              img.w-11.h-11.rounded-full.object-cover(src=`/uploads/${msg.sender.avatar}`)
+            else
+              .w-11.h-11.rounded-full.bg-orange-400.flex.items-center.justify-center.text-white.font-bold= msg.sender.username[0].toUpperCase()
+            .flex-1.min-w-0
+              p.font-semibold.text-gray-800= msg.sender.username
+              p.text-sm.text-gray-400.truncate= msg.content
+            .text-right
+              p.text-xs.text-gray-300= new Date(msg.createdAt).toLocaleDateString('es-AR')
+              if !msg.read
+                span.inline-block.w-2.h-2.bg-orange-500.rounded-full.mt-1
+
+    if sent && sent.length > 0
+      h2.text-lg.font-semibold.text-gray-700.mb-3 Enviados
+      .space-y-3
+        each msg in sent
+          a.flex.items-center.gap-3.bg-white.rounded-xl.shadow-sm.p-4.hover_shadow.transition(href=`/messages/${msg.receiver.id}`)
+            if msg.receiver.avatar
+              img.w-11.h-11.rounded-full.object-cover(src=`/uploads/${msg.receiver.avatar}`)
+            else
+              .w-11.h-11.rounded-full.bg-gray-300.flex.items-center.justify-center.text-gray-600.font-bold= msg.receiver.username[0].toUpperCase()
+            .flex-1.min-w-0
+              p.font-semibold.text-gray-800= `→ ${msg.receiver.username}`
+              p.text-sm.text-gray-400.truncate= msg.content
+            p.text-xs.text-gray-300= new Date(msg.createdAt).toLocaleDateString('es-AR')
+
+    if (!received || received.length === 0) && (!sent || sent.length === 0)
+      .text-center.py-16.text-gray-400
+        p.text-5xl.mb-4 ✉️
+        p.text-lg No tenés mensajes todavía.

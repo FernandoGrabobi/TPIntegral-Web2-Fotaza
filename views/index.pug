@@ -1,17 +1,59 @@
 extends layout
 
 block content
-  h1= message
-  hr
-  
-  if posts && posts.length > 0
-    .gallery
-      each post in posts
-        .post-card
-          img(src=post.media_url, alt=post.title, class="img-thumb")
-          .post-info
-            h3= post.title
-            p= post.description
-            span.license= post.license_type === 'copyright' ? '© Copyright' : 'CC'
-  else
-    p No hay publicaciones todavía. ¡Sé el primero en subir una!
+  //- Hero
+  .bg-gradient-to-br.from-gray-900.via-gray-800.to-orange-900.text-white.py-16
+    .max-w-7xl.mx-auto.px-4.text-center
+      h1.text-5xl.font-extrabold.mb-4
+        span.text-orange-400 Fotaza 2
+      p.text-xl.text-gray-300.mb-8 La comunidad donde las mejores fotos cobran vida.
+      if !currentUser
+        .flex.justify-center.gap-4.flex-wrap
+          a.bg-orange-500.hover_bg-orange-600.text-white.font-bold.px-8.py-3.rounded-full.text-lg(href="/auth/register") Crear cuenta gratis
+          a.border.border-white.text-white.hover_bg-white.hover_text-gray-900.font-bold.px-8.py-3.rounded-full.text-lg(href="/auth/login") Iniciar sesión
+      else
+        a.bg-orange-500.hover_bg-orange-600.text-white.font-bold.px-8.py-3.rounded-full.text-lg(href="/posts/create") + Nueva publicación
+
+  //- Grid de publicaciones
+  .max-w-7xl.mx-auto.px-4.py-10
+    .flex.items-center.justify-between.mb-6
+      h2.text-2xl.font-bold.text-gray-800 📸 Publicaciones destacadas
+      a.text-orange-500.hover_text-orange-600.text-sm.font-medium(href="/search") Ver todas →
+
+    if posts && posts.length > 0
+      .grid.grid-cols-1.sm_grid-cols-2.md_grid-cols-3.lg_grid-cols-4.gap-5
+        each post in posts
+          a.group.block.bg-white.rounded-2xl.shadow.hover_shadow-lg.overflow-hidden.transition-all.duration-200(href=`/posts/${post.id}`)
+            .relative.h-52.bg-gray-200.overflow-hidden
+              if post.images && post.images.length > 0
+                img.w-full.h-full.object-cover.group-hover_scale-105.transition-transform.duration-300(
+                  src='/uploads/' + post.images[0].filename
+                  alt=post.title
+                )
+              else
+                .w-full.h-full.flex.items-center.justify-center.text-gray-400.text-5xl 🖼️
+              //- Badge licencia
+              if post.license_type === 'copyright'
+                span.absolute.top-2.right-2.bg-black.bg-opacity-60.text-white.text-xs.px-2.py-1.rounded-full(style="font-size:10px") &copy;
+            .p-4
+              h3.font-semibold.text-gray-800.truncate.mb-1= post.title
+              .flex.items-center.justify-between.text-sm.text-gray-500
+                span
+                  if post.author
+                    | 👤 #{post.author.username}
+                span
+                  if post.ratings_count > 0
+                    span.text-yellow-500 ★
+                    | #{parseFloat(post.avg_rating).toFixed(1)}
+                  else
+                    span Sin valorar
+              if post.tags && post.tags.length > 0
+                .flex.flex-wrap.gap-1.mt-2
+                  each tag in post.tags.slice(0, 3)
+                    span.bg-orange-50.text-orange-600.text-xs.px-2.py-1.rounded-full= '#' + tag.name
+    else
+      .text-center.py-20.text-gray-400
+        p.text-6xl.mb-4 📷
+        p.text-xl Todavía no hay publicaciones.
+        if currentUser
+          a.mt-4.inline-block.bg-orange-500.text-white.px-6.py-2.rounded-full(href="/posts/create") Sé el primero en publicar

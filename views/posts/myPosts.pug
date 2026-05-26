@@ -1,0 +1,41 @@
+extends ../layout
+
+block content
+  .max-w-6xl.mx-auto.px-4.py-8
+    .flex.items-center.justify-between.mb-6
+      h1.text-2xl.font-bold.text-gray-800 📁 Mis publicaciones
+      a.bg-orange-500.hover_bg-orange-600.text-white.font-semibold.px-5.py-2.rounded-full(href="/posts/create") + Nueva
+
+    if posts && posts.length > 0
+      .grid.grid-cols-1.sm_grid-cols-2.md_grid-cols-3.gap-5
+        each post in posts
+          .bg-white.rounded-2xl.shadow.overflow-hidden
+            a.block.h-44.bg-gray-100.overflow-hidden(href=`/posts/${post.id}`)
+              if post.images && post.images.length > 0
+                img.w-full.h-full.object-cover.hover_scale-105.transition-transform(src=`/uploads/${post.images[0].filename}`)
+              else
+                .w-full.h-full.flex.items-center.justify-center.text-5xl 🖼️
+            .p-4
+              h3.font-semibold.text-gray-800.truncate.mb-1= post.title
+              .flex.items-center.justify-between.text-xs.text-gray-400.mb-3
+                span= new Date(post.createdAt).toLocaleDateString('es-AR')
+                span
+                  case post.status
+                    when 'active'
+                      span.bg-green-100.text-green-700.px-2.py-0.5.rounded-full Activa
+                    when 'under_review'
+                      span.bg-yellow-100.text-yellow-700.px-2.py-0.5.rounded-full En revisión
+                    when 'removed'
+                      span.bg-red-100.text-red-700.px-2.py-0.5.rounded-full Eliminada
+              .flex.gap-2
+                a.flex-1.text-center.text-xs.border.border-gray-200.rounded-lg.py-1.hover_bg-gray-50(href=`/posts/${post.id}`) Ver
+                if post.reports_count === 0
+                  a.flex-1.text-center.text-xs.border.border-orange-200.text-orange-600.rounded-lg.py-1.hover_bg-orange-50(href=`/posts/${post.id}/edit`) Editar
+                .text-xs.text-gray-400.flex.items-center.gap-1
+                  span ★#{parseFloat(post.avg_rating||0).toFixed(1)}
+                  span · #{post.ratings_count||0} votos
+    else
+      .text-center.py-20.text-gray-400
+        p.text-6xl.mb-4 📷
+        p.text-lg Todavía no publicaste nada.
+        a.mt-4.inline-block.bg-orange-500.text-white.px-6.py-2.rounded-full(href="/posts/create") Crear primera publicación

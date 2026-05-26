@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+  .max-w-2xl.mx-auto.px-4.py-8
+    //- Header conversación
+    .flex.items-center.gap-3.mb-6
+      a.text-gray-400.hover_text-gray-600.mr-1(href="/messages") ← Volver
+      if other.avatar
+        img.w-10.h-10.rounded-full.object-cover(src=`/uploads/${other.avatar}`)
+      else
+        .w-10.h-10.rounded-full.bg-orange-400.flex.items-center.justify-center.text-white.font-bold= other.username[0].toUpperCase()
+      div
+        p.font-semibold.text-gray-800= other.username
+        a.text-xs.text-orange-500.hover_underline(href=`/users/${other.id}`) Ver perfil
+
+    //- Mensajes
+    .space-y-3.mb-6.max-h-96.overflow-y-auto#messages-container
+      each msg in messages
+        .flex(class=msg.senderId === currentUser.id ? 'justify-end' : 'justify-start')
+          .max-w-xs.lg_max-w-sm
+            .rounded-2xl.px-4.py-2(class=msg.senderId === currentUser.id ? 'bg-orange-500 text-white' : 'bg-white text-gray-800 shadow')
+              p.text-sm= msg.content
+            p.text-xs.text-gray-400.mt-0.5(class=msg.senderId === currentUser.id ? 'text-right' : '')
+              = new Date(msg.createdAt).toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})
+
+    //- Formulario enviar
+    form.flex.gap-2(action=`/messages/${other.id}/send` method="POST")
+      input.flex-1.border.border-gray-300.rounded-xl.px-4.py-2.focus_outline-none.focus_border-orange-500(
+        type="text" name="content" required placeholder="Escribí un mensaje..." autocomplete="off"
+      )
+      button.bg-orange-500.hover_bg-orange-600.text-white.font-bold.px-5.py-2.rounded-xl(type="submit") Enviar
+
+  script.
+    // Scroll al final del chat
+    const c = document.getElementById('messages-container');
+    if (c) c.scrollTop = c.scrollHeight;

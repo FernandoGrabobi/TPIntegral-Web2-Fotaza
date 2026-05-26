@@ -1,0 +1,38 @@
+extends ../layout
+
+block content
+  .min-h-screen.flex.items-center.justify-center.py-12.px-4
+    .w-full.max-w-md
+      .bg-white.rounded-2xl.shadow-xl.p-8
+        .text-center.mb-8
+          p.text-5xl.mb-3 🎉
+          h1.text-3xl.font-extrabold.text-gray-900 Crear cuenta
+          p.text-gray-500.mt-1 Unite a la comunidad Fotaza 2
+
+        form(action="/auth/register" method="POST")
+          .mb-4
+            label.block.text-sm.font-medium.text-gray-700.mb-1(for="username") Nombre de usuario
+            input#username.w-full.border.border-gray-300.rounded-xl.px-4.py-3.focus_outline-none.focus_border-orange-500(
+              type="text" name="username" required placeholder="mi_usuario" minlength="3" maxlength="50"
+            )
+          .mb-4
+            label.block.text-sm.font-medium.text-gray-700.mb-1(for="email") Email
+            input#email.w-full.border.border-gray-300.rounded-xl.px-4.py-3.focus_outline-none.focus_border-orange-500(
+              type="email" name="email" required placeholder="tu@email.com"
+            )
+          .mb-4
+            label.block.text-sm.font-medium.text-gray-700.mb-1(for="password") Contraseña
+            input#password.w-full.border.border-gray-300.rounded-xl.px-4.py-3.focus_outline-none.focus_border-orange-500(
+              type="password" name="password" required placeholder="Mínimo 6 caracteres" minlength="6"
+            )
+          .mb-6
+            label.block.text-sm.font-medium.text-gray-700.mb-1(for="confirmPassword") Confirmar contraseña
+            input#confirmPassword.w-full.border.border-gray-300.rounded-xl.px-4.py-3.focus_outline-none.focus_border-orange-500(
+              type="password" name="confirmPassword" required placeholder="Repetí tu contraseña"
+            )
+          button.w-full.bg-orange-500.hover_bg-orange-600.text-white.font-bold.py-3.rounded-xl.transition-colors(type="submit")
+            | Crear cuenta
+
+        .text-center.mt-6.text-sm.text-gray-500
+          | ¿Ya tenés cuenta?&nbsp;
+          a.text-orange-500.font-semibold.hover_underline(href="/auth/login") Iniciá sesión

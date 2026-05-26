@@ -1,0 +1,78 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= title ? title + ' | Fotaza 2' : 'Fotaza 2'
+    script(src="https://cdn.tailwindcss.com")
+    link(rel="stylesheet" href="/css/style.css")
+  body.bg-gray-50.min-h-screen.flex.flex-col
+
+    nav.bg-gray-900.text-white.shadow-lg
+      .max-w-7xl.mx-auto.px-4
+        .flex.items-center.justify-between.h-16
+          a.flex.items-center.gap-2.text-xl.font-bold.text-orange-400(href="/")
+            span 📸
+            span Fotaza 2
+
+          form.hidden.md-block.flex-1.max-w-md.mx-8(action="/search" method="GET")
+            input.w-full.bg-gray-800.text-white.rounded-full.px-4.py-2.text-sm.placeholder-gray-400.border.border-gray-700.focus-outline-none(
+              type="text" name="q" placeholder="Buscar publicaciones..."
+            )
+
+          .flex.items-center.gap-3
+            if currentUser
+              a.text-gray-300.hover-text-orange-400.text-sm(href="/") Inicio
+              a.text-gray-300.hover-text-orange-400.text-sm(href="/feed") Mi feed
+              a.text-gray-300.hover-text-orange-400.text-sm(href="/search") Buscar
+              a.bg-orange-500.hover-bg-orange-600.text-white.text-sm.px-3.py-2.rounded-full.font-medium(href="/posts/create") + Publicar
+
+              a.relative.text-gray-300.hover-text-orange-400.px-2(href="/notifications" title="Notificaciones")
+                span 🔔
+                if unreadNotifications > 0
+                  span.absolute.-top-1.-right-1.bg-red-500.text-white.text-xs.rounded-full.w-4.h-4.flex.items-center.justify-center= unreadNotifications
+
+              .relative.group
+                button.flex.items-center.gap-2.text-sm.text-gray-300.hover-text-white.py-2
+                  if currentUser.avatar
+                    img.w-7.h-7.rounded-full.object-cover(src='/uploads/' + currentUser.avatar alt=currentUser.username)
+                  else
+                    span.w-7.h-7.rounded-full.bg-orange-500.flex.items-center.justify-center.text-white.font-bold.text-xs= currentUser.username[0].toUpperCase()
+                  span= currentUser.username
+                .absolute.right-0.mt-1.w-48.bg-white.rounded-lg.shadow-xl.border.border-gray-100.hidden.group-hover-block.z-50
+                  a.block.px-4.py-2.text-sm.text-gray-700.hover-bg-gray-50(href='/users/' + currentUser.id) Mi perfil
+                  a.block.px-4.py-2.text-sm.text-gray-700.hover-bg-gray-50(href="/posts/mine") Mis publicaciones
+                  a.block.px-4.py-2.text-sm.text-gray-700.hover-bg-gray-50(href="/collections") Mis colecciones
+                  a.block.px-4.py-2.text-sm.text-gray-700.hover-bg-gray-50(href="/messages") Mensajes
+                  a.block.px-4.py-2.text-sm.text-gray-700.hover-bg-gray-50(href="/interested") Interesados
+                  if currentUser.role === 'validator' || currentUser.role === 'admin'
+                    hr.my-1
+                    a.block.px-4.py-2.text-sm.text-red-600.hover-bg-red-50(href="/validator") Panel Moderacion
+                  hr.my-1
+                  form(action="/auth/logout" method="POST")
+                    button.block.w-full.text-left.px-4.py-2.text-sm.text-gray-700.hover-bg-gray-50(type="submit") Cerrar sesion
+            else
+              a.text-gray-300.hover-text-orange-400.text-sm(href="/auth/login") Iniciar sesion
+              a.bg-orange-500.hover-bg-orange-600.text-white.text-sm.px-4.py-2.rounded-full.font-medium(href="/auth/register") Registrarse
+
+    if flash
+      .max-w-7xl.mx-auto.px-4.pt-4
+        if flash.type === 'success'
+          .bg-green-50.border.border-green-200.text-green-800.rounded-lg.px-4.py-3.flex.items-center.gap-2
+            span ✅
+            span= flash.message
+        else if flash.type === 'error'
+          .bg-red-50.border.border-red-200.text-red-800.rounded-lg.px-4.py-3.flex.items-center.gap-2
+            span ❌
+            span= flash.message
+        else
+          .bg-blue-50.border.border-blue-200.text-blue-800.rounded-lg.px-4.py-3.flex.items-center.gap-2
+            span ℹ️
+            span= flash.message
+
+    main.flex-1
+      block content
+
+    footer.bg-gray-900.text-gray-400.py-8.mt-12
+      .max-w-7xl.mx-auto.px-4.text-center
+        p.text-sm Fotaza 2 &copy; 2026 &middot; Programacion Web II &middot; Universidad de La Punta

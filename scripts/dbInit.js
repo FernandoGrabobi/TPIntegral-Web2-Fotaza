@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { sequelize, User, Post, PostImage, Tag, Comment, Rating, Follow, Collection } = require('./models');
+const { sequelize, User, Post, PostImage, Tag, Comment, Rating, Follow, Collection } = require('../models');
 const bcrypt = require('bcrypt');
 
 async function init() {
