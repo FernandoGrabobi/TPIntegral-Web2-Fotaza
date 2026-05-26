@@ -1,4 +1,4 @@
-const { Notification, User, Post } = require('../models');
+const {Notification, User, Post} = require('../models');
 
 exports.index = async(req,res)=>{
   try{

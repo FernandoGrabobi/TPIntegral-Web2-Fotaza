@@ -1,4 +1,4 @@
-const { User, Post, PostImage, Follow, Tag, Message, Interested } = require('../models');
+const {User, Post, PostImage, Follow, Tag, Message, Interested} = require('../models');
 const { Op } = require('sequelize');
 
 exports.show = async (req, res)=>{

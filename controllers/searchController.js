@@ -1,5 +1,5 @@
-const { Post, PostImage, User, Tag } = require('../models');
-const { Op } = require('sequelize');
+const {Post, PostImage, User, Tag} = require('../models');
+const {Op} = require('sequelize');
 
 exports.search = async (req, res)=>{
   try {
